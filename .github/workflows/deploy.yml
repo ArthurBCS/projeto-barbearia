@@ -2,17 +2,17 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "master" ]  # ou "master", dependendo do branch principal
+    branches: [ "main" ]  # ou "master", dependendo do seu branch principal
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
       - name: Install dependencies
         run: npm ci
       - name: Build
@@ -21,4 +21,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: barbearia-management-system\build # Certifique-se de que isso aponta para a pasta build
+          publish_dir: barbearia-management-system\build

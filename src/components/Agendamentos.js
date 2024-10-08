@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { AlertCircle, Edit2, MoreVertical, Check, Clock, X, Calendar } from 'lucide-react';
+import { Edit2, MoreVertical, Check, Clock, X, Calendar } from 'lucide-react';
 import { Input } from "../components/ui/imput";
 
-    // Apartir daqui temos o inicio do código
-const tiposDeCorte = [
-  { nome: "Corte Clássico", valor: 30, tempoMedio: 30 },
-  { nome: "Barba", valor: 25, tempoMedio: 20 },
-  { nome: "Corte + Barba", valor: 50, tempoMedio: 45 },
-  { nome: "Acabamento", valor: 20, tempoMedio: 15 },
-  { nome: "Pacote Completo", valor: 70, tempoMedio: 60 },
-];
+// Remova ou comente as importações não utilizadas
+// import { AlertCircle } from 'lucide-react';
 
-const barbeiros = [
-  { id: 1, nome: "João" },
-  { id: 2, nome: "Maria" },
-  { id: 3, nome: "Pedro" },
+const tiposDeCorte = [
+  { nome: "Corte Clássico", valor: 30 },
+  { nome: "Barba", valor: 25 },
+  { nome: "Corte + Barba", valor: 50 },
+  { nome: "Acabamento", valor: 20 },
+  { nome: "Pacote Completo", valor: 70 },
 ];
 
 const AgendamentoDashboard = () => {
@@ -25,7 +21,6 @@ const AgendamentoDashboard = () => {
   const [hora, setHora] = useState('');
   const [tipoCorte, setTipoCorte] = useState('');
   const [valor, setValor] = useState(0);
-  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState('');
   const [agendamentos, setAgendamentos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [agendamentosCancelados, setAgendamentosCancelados] = useState([]);
