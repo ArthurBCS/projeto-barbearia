@@ -1,0 +1,13 @@
+- name: Install dependencies
+  run: |
+    npm ci
+    npm install gh-pages --save-dev
+
+- name: Build
+  run: npm run build
+
+- name: Deploy
+  run: |
+    git config --global user.name 'GitHub Actions'
+    git config --global user.email 'github-actions@github.com'
+    npm run deploy
