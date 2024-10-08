@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -19,11 +19,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - name: Install dependencies
         run: |
-          npm ci
-          npm install gh-pages --save-dev
+              npm install
+              npm install gh-pages --save-dev
       - name: Build
         run: npm run build
       - name: Setup Pages
