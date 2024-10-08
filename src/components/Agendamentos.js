@@ -4,6 +4,7 @@ import { Button } from "../components/ui/button";
 import { AlertCircle, Edit2, MoreVertical, Check, Clock, X, Calendar } from 'lucide-react';
 import { Input } from "../components/ui/imput";
 
+    // Apartir daqui temos o inicio do código
 const tiposDeCorte = [
   { nome: "Corte Clássico", valor: 30, tempoMedio: 30 },
   { nome: "Barba", valor: 25, tempoMedio: 20 },

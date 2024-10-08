@@ -1,5 +1,6 @@
 {
   "name": "barbearia-management-system",
+  "homepage": "https://arthurbcs.github.io/projeto-barbearia",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
