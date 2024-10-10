@@ -9,7 +9,7 @@ const Historico = () => {
   const [filtro, setFiltro] = useState({ dataInicio: '', dataFim: '', cliente: '' });
 
   useEffect(() => {
-    // TODO: Buscar histórico do servidor
+    // NOTE: Buscar histórico do servidor
     // fetch('/api/historico')
     //   .then(response => response.json())
     //   .then(data => setHistorico(data))
@@ -29,7 +29,7 @@ const Historico = () => {
   }, []);
 
   const filtrarHistorico = useCallback(() => {
-    // TODO: Considerar mover esta lógica para o servidor para melhor performance com grandes volumes de dados
+    // NOTE: Considerar mover esta lógica para o servidor para melhor performance com grandes volumes de dados
     return historico.filter(item => {
       const dataCorresponde = (!filtro.dataInicio || item.data >= filtro.dataInicio) &&
                               (!filtro.dataFim || item.data <= filtro.dataFim);
@@ -55,20 +55,13 @@ const Historico = () => {
             <CardTitle className="text-lg font-semibold mb-2">Filtros</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 type="date"
-                name="dataInicio"
-                value={filtro.dataInicio}
+                name="data"
+                value={filtro.data}
                 onChange={handleFiltroChange}
-                placeholder="Data Início"
-              />
-              <Input
-                type="date"
-                name="dataFim"
-                value={filtro.dataFim}
-                onChange={handleFiltroChange}
-                placeholder="Data Fim"
+                placeholder="dd/mm/aaaa"
               />
               <Input
                 type="text"
