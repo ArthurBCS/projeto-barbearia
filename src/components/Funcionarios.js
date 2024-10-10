@@ -1,28 +1,47 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "../components/src/ui/button";
-import { Input } from "../components/src/ui/input";
+import { Input } from "../components/src/ui/imput";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
 
 const Funcionarios = () => {
-  // Estado para armazenar a lista de funcionários
-  const [funcionarios, setFuncionarios] = useState([
-    { id: 1, nome: 'Pedro Oliveira', cargo: 'Barbeiro', telefone: '(11) 97777-7777' },
-    { id: 2, nome: 'Ana Santos', cargo: 'Cabeleireira', telefone: '(11) 96666-6666' },
-  ]);
-
-  // Estado para o formulário de novo funcionário
+  const [funcionarios, setFuncionarios] = useState([]);
   const [novoFuncionario, setNovoFuncionario] = useState({ nome: '', cargo: '', telefone: '' });
 
-  // Atualiza o estado do novoFuncionario quando os inputs mudam
+  useEffect(() => {
+    // TODO: Buscar funcionários do servidor
+    // fetch('/api/funcionarios')
+    //   .then(response => response.json())
+    //   .then(data => setFuncionarios(data))
+    //   .catch(error => console.error('Erro ao carregar funcionários:', error));
+
+    // REMOVER: Dados mockados (remover quando integrado com o back-end)
+    setFuncionarios([
+      { id: 1, nome: 'Pedro Oliveira', cargo: 'Barbeiro', telefone: '(11) 97777-7777' },
+      { id: 2, nome: 'Ana Santos', cargo: 'Cabeleireira', telefone: '(11) 96666-6666' },
+    ]);
+  }, []);
+
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setNovoFuncionario(prev => ({ ...prev, [name]: value }));
   }, []);
 
-  // Lida com a submissão do formulário para adicionar novo funcionário
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (novoFuncionario.nome && novoFuncionario.cargo && novoFuncionario.telefone) {
+      // TODO: Adicionar novo funcionário no servidor
+      // fetch('/api/funcionarios', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(novoFuncionario)
+      // }).then(response => response.json())
+      //   .then(newFuncionario => {
+      //     setFuncionarios(prev => [...prev, newFuncionario]);
+      //     setNovoFuncionario({ nome: '', cargo: '', telefone: '' });
+      //   })
+      //   .catch(error => console.error('Erro ao adicionar funcionário:', error));
+
+      // REMOVER: Lógica local (remover quando integrado com o back-end)
       setFuncionarios(prev => [...prev, { ...novoFuncionario, id: Date.now() }]);
       setNovoFuncionario({ nome: '', cargo: '', telefone: '' });
     } else {

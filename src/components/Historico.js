@@ -5,14 +5,17 @@ import { Input } from "../components/src/ui/imput";
 import { Button } from "../components/src/ui/button";
 
 const Historico = () => {
-  // Estado para armazenar o histórico de atendimentos
   const [historico, setHistorico] = useState([]);
-  // Estado para armazenar os filtros aplicados
   const [filtro, setFiltro] = useState({ dataInicio: '', dataFim: '', cliente: '' });
 
-  // Efeito para carregar o histórico inicial (simulado)
   useEffect(() => {
-    // TODO: Substituir por uma chamada API real
+    // TODO: Buscar histórico do servidor
+    // fetch('/api/historico')
+    //   .then(response => response.json())
+    //   .then(data => setHistorico(data))
+    //   .catch(error => console.error('Erro ao carregar histórico:', error));
+
+    // REMOVER: Dados mockados (remover quando integrado com o back-end)
     setHistorico([
       { id: 1, cliente: 'João Silva', servico: 'Corte Simples', data: '2024-10-01', valor: 30 },
       { id: 2, cliente: 'Maria Souza', servico: 'Coloração', data: '2024-10-02', valor: 150 },
@@ -20,14 +23,13 @@ const Historico = () => {
     ]);
   }, []);
 
-  // Função para atualizar o estado do filtro
   const handleFiltroChange = useCallback((e) => {
     const { name, value } = e.target;
     setFiltro(prev => ({ ...prev, [name]: value }));
   }, []);
 
-  // Função para filtrar o histórico com base nos filtros aplicados
   const filtrarHistorico = useCallback(() => {
+    // TODO: Considerar mover esta lógica para o servidor para melhor performance com grandes volumes de dados
     return historico.filter(item => {
       const dataCorresponde = (!filtro.dataInicio || item.data >= filtro.dataInicio) &&
                               (!filtro.dataFim || item.data <= filtro.dataFim);
@@ -36,10 +38,8 @@ const Historico = () => {
     });
   }, [historico, filtro]);
 
-  // Memoização do histórico filtrado para evitar recálculos desnecessários
   const historicoFiltrado = useMemo(() => filtrarHistorico(), [filtrarHistorico]);
 
-  // Cálculo do total de receita com base no histórico filtrado
   const totalReceita = useMemo(() => {
     return historicoFiltrado.reduce((total, item) => total + item.valor, 0);
   }, [historicoFiltrado]);

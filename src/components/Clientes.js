@@ -4,51 +4,75 @@ import { Input } from "../components/src/ui/imput";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
 
 const Clientes = () => {
-  // Estados para gerenciar a lista de clientes e o formulário
   const [clientes, setClientes] = useState([]);
   const [novoCliente, setNovoCliente] = useState({ nome: '', telefone: '', email: '', dataNascimento: '' });
   const [modoEdicao, setModoEdicao] = useState(false);
   const [clienteEditando, setClienteEditando] = useState(null);
 
-  // Simula o carregamento de clientes do banco de dados
   useEffect(() => {
     // TODO: Substituir por uma chamada API real
+    // fetch('/api/clientes')
+    //   .then(response => response.json())
+    //   .then(data => setClientes(data))
+    //   .catch(error => console.error('Erro ao carregar clientes:', error));
+
+    // REMOVER: Dados mockados (remover quando integrado com o back-end)
     setClientes([
       { id: 1, nome: 'João Silva', telefone: '(11) 99999-9999', email: 'joao@email.com', dataNascimento: '1990-05-15' },
       { id: 2, nome: 'Maria Souza', telefone: '(11) 88888-8888', email: 'maria@email.com', dataNascimento: '1985-10-20' },
     ]);
   }, []);
 
-  // Atualiza o estado do novoCliente quando os inputs mudam
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNovoCliente(prev => ({ ...prev, [name]: value }));
   };
 
-  // Lida com a submissão do formulário (adicionar ou editar cliente)
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (modoEdicao) {
-      // Atualiza o cliente existente
+      // TODO: Atualizar cliente no servidor
+      // fetch(`/api/clientes/${clienteEditando.id}`, {
+      //   method: 'PUT',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(novoCliente)
+      // }).then(response => response.json())
+      //   .then(updatedCliente => {
+      //     setClientes(prev => prev.map(c => c.id === updatedCliente.id ? updatedCliente : c));
+      //     setModoEdicao(false);
+      //   });
+
+      // REMOVER: Lógica local (remover quando integrado com o back-end)
       setClientes(prev => prev.map(c => c.id === clienteEditando.id ? { ...clienteEditando, ...novoCliente } : c));
       setModoEdicao(false);
     } else {
-      // Adiciona um novo cliente
+      // TODO: Adicionar novo cliente no servidor
+      // fetch('/api/clientes', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(novoCliente)
+      // }).then(response => response.json())
+      //   .then(newCliente => setClientes(prev => [...prev, newCliente]));
+
+      // REMOVER: Lógica local (remover quando integrado com o back-end)
       setClientes(prev => [...prev, { ...novoCliente, id: Date.now() }]);
     }
-    // Reseta o formulário
     setNovoCliente({ nome: '', telefone: '', email: '', dataNascimento: '' });
   }, [modoEdicao, clienteEditando, novoCliente]);
 
-  // Inicia o modo de edição para um cliente
   const editarCliente = useCallback((cliente) => {
     setModoEdicao(true);
     setClienteEditando(cliente);
     setNovoCliente(cliente);
   }, []);
 
-  // Remove um cliente da lista
   const excluirCliente = useCallback((id) => {
+    // TODO: Excluir cliente no servidor
+    // fetch(`/api/clientes/${id}`, { method: 'DELETE' })
+    //   .then(() => setClientes(prev => prev.filter(c => c.id !== id)))
+    //   .catch(error => console.error('Erro ao excluir cliente:', error));
+
+    // REMOVER: Lógica local (remover quando integrado com o back-end)
     setClientes(prev => prev.filter(c => c.id !== id));
   }, []);
 
