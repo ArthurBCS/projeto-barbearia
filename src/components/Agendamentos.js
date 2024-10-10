@@ -18,7 +18,7 @@ const AgendamentoDashboard = () => {
   const [hora, setHora] = useState('');
   const [tipoCorte, setTipoCorte] = useState('');
   const [valor, setValor] = useState(0);
-  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState('');
+  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState(null);
   const [barbeiros, setBarbeiros] = useState([
     { id: 1, nome: "Barbeiro 1" },
     { id: 2, nome: "Barbeiro 2" },
