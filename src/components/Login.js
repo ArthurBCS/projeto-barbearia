@@ -5,13 +5,39 @@ import { Input } from "../components/src/ui/imput";
 import { Button } from "../components/src/ui/button";
 
 const Login = ({ onLogin }) => {
-  // Estado para controlar se está no modo de login ou registro
   const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({ email: '', password: '', name: '' });
 
-  // Função para lidar com o envio do formulário
-  const handleSubmit = (e) => {
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implementar lógica de autenticação real
+    // NOTE: Implementar lógica de autenticação real
+    // Exemplo de integração futura com o back-end:
+    // try {
+    //   const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+    //   const response = await fetch(endpoint, {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(formData)
+    //   });
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     localStorage.setItem('authToken', data.token);
+    //     onLogin();
+    //   } else {
+    //     const errorData = await response.json();
+    //     alert(errorData.message);
+    //   }
+    // } catch (error) {
+    //   console.error('Erro de autenticação:', error);
+    //   alert('Erro ao realizar autenticação. Tente novamente.');
+    // }
+    
+    // REMOVER: Esta linha deve ser removida quando a autenticação real for implementada
     onLogin();
   };
 
@@ -36,44 +62,37 @@ const Login = ({ onLogin }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3 }}
             >
-              {isLogin ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    required
-                  />
-                  <Input
-                    type="password"
-                    placeholder="Senha"
-                    required
-                  />
-                  <Button type="submit" className="w-full">
-                    Entrar
-                  </Button>
-                </form>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
                   <Input
                     type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
                     placeholder="Nome"
                     required
                   />
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    required
-                  />
-                  <Input
-                    type="password"
-                    placeholder="Senha"
-                    required
-                  />
-                  <Button type="submit" className="w-full">
-                    Inscrever-se
-                  </Button>
-                </form>
-              )}
+                )}
+                <Input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="Email"
+                  required
+                />
+                <Input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  placeholder="Senha"
+                  required
+                />
+                <Button type="submit" className="w-full">
+                  {isLogin ? 'Entrar' : 'Inscrever-se'}
+                </Button>
+              </form>
             </motion.div>
 
             <div className="mt-4 text-center">
