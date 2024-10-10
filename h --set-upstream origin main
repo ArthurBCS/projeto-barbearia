@@ -1,0 +1,27 @@
+[33mbe43919a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Atualização
+[33m0d762b16[m Atualização
+[33mba379aa4[m Atualização
+[33m6a25227e[m Atualização
+[33m063424d1[m[33m ([m[1;31morigin/main[m[33m)[m Atualização
+[33m26ed69e2[m Remove node_modules e adiciona ao .gitignore
+[33m9e794d18[m Pastas atualizadas
+[33m86c7e18a[m Adiciona README básico
+[33mef53a9cf[m Adiciona componente de input
+[33m35aaec21[m Limpa configurações de deploy
+[33ma238663f[m Atualiza Agendamentos.js e corrige erros de ESLint
+[33mdb84d7a7[m Corrige variáveis não definidas em Agendamentos.js
+[33m9805d79d[m Configura build para GitHub Pages
+[33m4d6c18e0[m Corrige erros de lint e atualiza configuração do workflow
+[33m6907943e[m Ajusta configuração para deploy correto
+[33me91fd0a0[m Atualiza dependências e configura Node.js v20.18.0
+[33m87a3bbed[m Adiciona workflow de deploy
+[33m680aede5[m Adiciona workflow de deploy
+[33mc75372c1[m Atualiza workflow do GitHub Actions
+[33me86d3601[m Atualiza .gitignore para excluir node_modules
+[33m6bda034d[m Corrige formatação do arquivo de workflow
+[33mfec2499b[m Adiciona dependências faltantes
+[33m2cc7410d[m Corrige sintaxe do arquivo YAML de deploy
+[33m5e78f05a[m Configuração para GitHub Pages
+[33m2ecc3075[m Adiciona script de build ao package.json
+[33m02f64913[m Configuração de e-mail atualizada
+[33m81dfe85e[m Commit inicial do projeto BarberSystem
