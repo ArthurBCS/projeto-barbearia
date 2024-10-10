@@ -1,6 +1,6 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
+import { Button } from "../components/src/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Scissors, Users, DollarSign, TrendingUp } from 'lucide-react';
 

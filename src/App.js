@@ -5,9 +5,12 @@ import Agendamentos from './components/Agendamentos';
 import Clientes from './components/Clientes';
 import Historico from './components/Historico';
 
+// Componente principal da aplicação
 const App = () => {
+  // Estado para controlar a opção de menu selecionada
   const [selectedOption, setSelectedOption] = useState('dashboard');
 
+  // Array de itens do menu
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'agendamentos', label: 'Agendamentos', icon: '📅' },
@@ -15,6 +18,7 @@ const App = () => {
     { id: 'historico', label: 'Histórico', icon: '📜' },
   ];
 
+  // Função para renderizar o conteúdo baseado na opção selecionada
   const renderContent = () => {
     switch (selectedOption) {
       case 'dashboard':
@@ -29,6 +33,20 @@ const App = () => {
         return <Dashboard />;
     }
   };
+
+  // NOTE: Implementar verificação de autenticação
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const token = localStorage.getItem('token');
+  //     if (token) {
+  //       // Verificar token com o back-end
+  //       // Se inválido, redirecionar para login
+  //     } else {
+  //       // Redirecionar para login
+  //     }
+  //   };
+  //   checkAuth();
+  // }, []);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -58,7 +76,12 @@ const App = () => {
         </nav>
         <div className="absolute bottom-0 w-64 p-5">
           <button
-            onClick={() => {/* Implementar lógica de logout */}}
+            onClick={() => {
+              // NOTE: Implementar lógica de logout
+              // 1. Chamar API de logout no back-end
+              // 2. Limpar token do localStorage
+              // 3. Redirecionar para tela de login
+            }}
             className="w-full bg-red-500 text-white p-2 rounded hover:bg-red-600 transition duration-300"
           >
             Sair

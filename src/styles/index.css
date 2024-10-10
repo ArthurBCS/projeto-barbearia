@@ -1,0 +1,31 @@
+/* Importação das classes base do Tailwind CSS */
+@tailwind base;
+/* Importação dos componentes do Tailwind CSS */
+@tailwind components;
+/* Importação das utilidades do Tailwind CSS */
+@tailwind utilities;
+
+/* Estilos globais para o body */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* NOTE: Aqui podemos adicionar estilos globais personalizados */
+/* Por exemplo:
+:root {
+  --primary-color: #your-primary-color;
+  --secondary-color: #your-secondary-color;
+}
+*/
+
+/* NOTE: Pode considerar adicionar classes personalizadas do Tailwind */
+/* @layer components {
+  .btn-primary {
+    @apply bg-blue-500 text-white font-bold py-2 px-4 rounded;
+  }
+} */

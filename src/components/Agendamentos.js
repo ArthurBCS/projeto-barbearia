@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
+import { Button } from "../components/src/ui/button";
 import { AlertCircle, Edit2, MoreVertical, Check, Clock, X, Calendar } from 'lucide-react';
-import { Input } from "../components/ui/imput";
+import { Input } from "../components/src/ui/imput";
 
+// NOTE: Integrar com o back-end - Buscar tipos de corte do servidor
 const tiposDeCorte = [
   { nome: "Corte Clássico", valor: 30, tempoMedio: 30 },
   { nome: "Barba", valor: 25, tempoMedio: 20 },
@@ -13,18 +14,22 @@ const tiposDeCorte = [
 ];
 
 const AgendamentoDashboard = () => {
+  // Estados para o formulário de agendamento
   const [nome, setNome] = useState('');
   const [data, setData] = useState('');
   const [hora, setHora] = useState('');
   const [tipoCorte, setTipoCorte] = useState('');
   const [valor, setValor] = useState(0);
-  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState(null);
-  const [barbeiros, setBarbeiros] = useState([
+  const [barbeiroSelecionado, setBarbeiroSelecionado] = useState('');
+
+  // NOTE: Integrar com o back-end - Buscar lista de barbeiros do servidor
+  const [barbeiros] = useState([
     { id: 1, nome: "Barbeiro 1" },
     { id: 2, nome: "Barbeiro 2" },
     { id: 3, nome: "Barbeiro 3" }
   ]);
   
+  // Estados para gerenciamento de agendamentos
   const [agendamentos, setAgendamentos] = useState([]);
   const [editandoId, setEditandoId] = useState(null);
   const [agendamentosCancelados, setAgendamentosCancelados] = useState([]);
@@ -32,6 +37,7 @@ const AgendamentoDashboard = () => {
   const [dataFiltro, setDataFiltro] = useState('');
   const [agendamentosFiltrados, setAgendamentosFiltrados] = useState([]);
 
+  // Efeito para atualizar status de agendamentos a cada minuto
   useEffect(() => {
     const interval = setInterval(() => {
       setAgendamentos(prevAgendamentos => 
@@ -48,19 +54,22 @@ const AgendamentoDashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    filtrarAgendamentos();
-  }, [agendamentos, dataFiltro]);
-
-  const filtrarAgendamentos = () => {
+  // Função para filtrar agendamentos
+  const filtrarAgendamentos = useCallback(() => {
     if (!dataFiltro) {
       setAgendamentosFiltrados(agendamentos);
     } else {
       const filtrados = agendamentos.filter(agendamento => agendamento.data === dataFiltro);
       setAgendamentosFiltrados(filtrados);
     }
-  };
+  }, [agendamentos, dataFiltro]);
 
+  // Efeito para filtrar agendamentos quando a data de filtro ou a lista de agendamentos muda
+  useEffect(() => {
+    filtrarAgendamentos();
+  }, [filtrarAgendamentos]);
+
+  // Função para obter a cor do status
   const getStatusColor = (status) => {
     switch(status) {
       case 'confirmado': return 'text-green-500';
@@ -70,32 +79,36 @@ const AgendamentoDashboard = () => {
     }
   };
 
+  // Componente para exibir ícone do status
   const StatusIcon = ({ status }) => {
     switch(status) {
-      case 'confirmado': return <Check className={`${getStatusColor(status)}`} />;
-      case 'pendente': return <Clock className={`${getStatusColor(status)}`} />;
-      case 'cancelado': return <X className={`${getStatusColor(status)}`} />;
+      case 'confirmado': return <Check className={getStatusColor(status)} />;
+      case 'pendente': return <Clock className={getStatusColor(status)} />;
+      case 'cancelado': return <X className={getStatusColor(status)} />;
       default: return null;
     }
   };
 
+  // Função para alternar o menu de opções
   const toggleMenu = (id) => {
-    setMenuAbertoId(menuAbertoId === id ? null : id);
+    setMenuAbertoId(prevId => prevId === id ? null : id);
   };
 
+  // Função para atualizar o status de um agendamento
+  // NOTE: Integrar com o back-end - Atualizar status no servidor
   const updateStatus = (id, newStatus) => {
     if (newStatus === 'cancelado') {
-      const agendamentoCancelado = agendamentos.find(ag => ag.id === id);
-      setAgendamentosCancelados([...agendamentosCancelados, agendamentoCancelado]);
-      setAgendamentos(agendamentos.filter(ag => ag.id !== id));
+      setAgendamentosCancelados(prev => [...prev, agendamentos.find(ag => ag.id === id)]);
+      setAgendamentos(prev => prev.filter(ag => ag.id !== id));
     } else {
-      setAgendamentos(agendamentos.map(ag =>
+      setAgendamentos(prev => prev.map(ag =>
         ag.id === id ? { ...ag, status: newStatus } : ag
       ));
     }
     setMenuAbertoId(null);
   };
 
+  // Função para verificar disponibilidade de horário
   const verificarDisponibilidade = (data, hora, barbeiro, tempoMedio) => {
     const horaInicio = new Date(`${data}T${hora}`);
     const horaFim = new Date(horaInicio.getTime() + tempoMedio * 60000);
@@ -108,9 +121,15 @@ const AgendamentoDashboard = () => {
     });
   };
 
+  // Função para lidar com o envio do formulário de agendamento
+  // NOTE: Integrar com o back-end - Enviar novo agendamento para o servidor
   const handleSubmit = (e) => {
     e.preventDefault();
     const tipoCorteObj = tiposDeCorte.find(t => t.nome === tipoCorte);
+    if (!tipoCorteObj) {
+      alert("Por favor, selecione um tipo de corte válido.");
+      return;
+    }
     if (!verificarDisponibilidade(data, hora, barbeiroSelecionado, tipoCorteObj.tempoMedio)) {
       alert("Horário indisponível para este barbeiro. Por favor, escolha outro horário ou barbeiro.");
       return;
@@ -126,23 +145,30 @@ const AgendamentoDashboard = () => {
       barbeiro: barbeiroSelecionado,
       status: 'confirmado' 
     };
-    setAgendamentos([...agendamentos, novoAgendamento]);
+    setAgendamentos(prev => [...prev, novoAgendamento]);
     resetForm();
   };
 
+  // Função para salvar edição de um agendamento
+  // NOTE: Integrar com o back-end - Atualizar agendamento no servidor
   const saveEdit = (e) => {
     e.preventDefault();
     const tipoCorteObj = tiposDeCorte.find(t => t.nome === tipoCorte);
+    if (!tipoCorteObj) {
+      alert("Por favor, selecione um tipo de corte válido.");
+      return;
+    }
     if (!verificarDisponibilidade(data, hora, barbeiroSelecionado, tipoCorteObj.tempoMedio)) {
       alert("Horário indisponível para este barbeiro. Por favor, escolha outro horário ou barbeiro.");
       return;
     }
-    setAgendamentos(agendamentos.map(ag => 
+    setAgendamentos(prev => prev.map(ag => 
       ag.id === editandoId ? { ...ag, nome, data, hora, tipoCorte, valor, barbeiro: barbeiroSelecionado, tempoMedio: tipoCorteObj.tempoMedio } : ag
     ));
     resetForm();
   };
 
+  // Função para lidar com a mudança do tipo de corte
   const handleTipoCorteChange = (e) => {
     const selectedValue = e.target.value;
     setTipoCorte(selectedValue);
@@ -150,6 +176,7 @@ const AgendamentoDashboard = () => {
     setValor(corte ? corte.valor : 0);
   };
 
+  // Função para iniciar a edição de um agendamento
   const startEditing = (agendamento) => {
     setEditandoId(agendamento.id);
     setNome(agendamento.nome);
@@ -160,6 +187,7 @@ const AgendamentoDashboard = () => {
     setBarbeiroSelecionado(agendamento.barbeiro);
   };
 
+  // Função para resetar o formulário
   const resetForm = () => {
     setNome('');
     setData('');
@@ -170,6 +198,7 @@ const AgendamentoDashboard = () => {
     setEditandoId(null);
   };
 
+  // Renderização do componente
   return (
     <div className="min-h-screen bg-white text-gray-900 p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
@@ -281,11 +310,19 @@ const AgendamentoDashboard = () => {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={() => startEditing(agendamento)} className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full">
+                        <Button 
+                          onClick={() => startEditing(agendamento)} 
+                          className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full"
+                          aria-label="Editar agendamento"
+                        >
                           <Edit2 size={16} />
                         </Button>
                         <div className="relative">
-                          <Button onClick={() => toggleMenu(agendamento.id)} className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-full">
+                          <Button 
+                            onClick={() => toggleMenu(agendamento.id)} 
+                            className="p-2 bg-gray-500 hover:bg-gray-600 text-white rounded-full"
+                            aria-label="Opções de agendamento"
+                          >
                             <MoreVertical size={16} />
                           </Button>
                           {menuAbertoId === agendamento.id && (
