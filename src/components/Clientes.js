@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
-import { Button } from "../components/src/ui/button";
+import { Button } from "./src/ui/button";
 import { Input } from "./src/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./src/ui/card";
 import { UserPlus, Phone, Mail, Calendar, Search, Edit, Trash2 } from 'lucide-react';
+import { api } from '../services/api';
+import { motion } from 'framer-motion';
 
 // Funções de formatação - podem ser mantidas no front-end ou movidas para um arquivo de utilidades
 const formatCPF = (value) => {
@@ -24,85 +25,61 @@ const Clientes = () => {
   const [clienteEditando, setClienteEditando] = useState(null);
   const [pesquisa, setPesquisa] = useState('');
 
-  // REMOVER: Este useEffect com dados mockados
   useEffect(() => {
-    setTimeout(() => {
-      setClientes([
-        { id: 1, nome: 'João Silva', cpf: '123.456.789-00', telefone: '(11) 99999-9999', email: 'joao@email.com', dataNascimento: '1990-05-15' },
-        { id: 2, nome: 'Maria Souza', cpf: '987.654.321-00', telefone: '(11) 88888-8888', email: 'maria@email.com', dataNascimento: '1985-10-20' },
-      ]);
-    }, 1000);
+    fetchClientes();
   }, []);
 
-  // SUBSTITUIR: Com uma chamada à API para buscar clientes
-  // useEffect(() => {
-  //   fetch('/api/clientes')
-  //     .then(response => response.json())
-  //     .then(data => setClientes(data))
-  //     .catch(error => console.error('Erro ao carregar clientes:', error));
-  // }, []);
+  const editarCliente = (cliente) => {
+    setNovoCliente(cliente);
+    setModoEdicao(true);
+    setClienteEditando(cliente);
+  };
 
-  // Função para lidar com mudanças nos inputs
-  const handleInputChange = useCallback((e) => {
+  const fetchClientes = async () => {
+    try {
+      const data = await api.get('/clientes');
+      setClientes(data);
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error);
+    }
+  };
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     let formattedValue = value;
+    
     if (name === 'cpf') {
       formattedValue = formatCPF(value);
     } else if (name === 'telefone') {
       formattedValue = formatTelefone(value);
     }
+    
     setNovoCliente(prev => ({ ...prev, [name]: formattedValue }));
-  }, []);
+  };
 
-  // Função para lidar com o envio do formulário
-  const handleSubmit = useCallback((e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    // REMOVER: Lógica local de adição/edição
-    if (modoEdicao) {
-      setClientes(prev => prev.map(c => c.id === clienteEditando.id ? { ...clienteEditando, ...novoCliente } : c));
+    try {
+      if (modoEdicao) {
+        await api.put(`/clientes/${clienteEditando.id}`, novoCliente);
+      } else {
+        await api.post('/clientes', novoCliente);
+      }
+      fetchClientes();
+      setNovoCliente({ nome: '', cpf: '', telefone: '', email: '', dataNascimento: '' });
       setModoEdicao(false);
-    } else {
-      setClientes(prev => [...prev, { ...novoCliente, id: Date.now() }]);
+    } catch (error) {
+      console.error('Erro ao salvar cliente:', error);
     }
-    setNovoCliente({ nome: '', cpf: '', telefone: '', email: '', dataNascimento: '' });
-
-    // SUBSTITUIR: Com chamadas à API para adicionar ou atualizar cliente
-    // const url = modoEdicao ? `/api/clientes/${clienteEditando.id}` : '/api/clientes';
-    // const method = modoEdicao ? 'PUT' : 'POST';
-    // fetch(url, {
-    //   method: method,
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(novoCliente)
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //   if (modoEdicao) {
-    //     setClientes(prev => prev.map(c => c.id === data.id ? data : c));
-    //   } else {
-    //     setClientes(prev => [...prev, data]);
-    //   }
-    //   setModoEdicao(false);
-    //   setNovoCliente({ nome: '', cpf: '', telefone: '', email: '', dataNascimento: '' });
-    // })
-    // .catch(error => console.error('Erro ao salvar cliente:', error));
   }, [modoEdicao, clienteEditando, novoCliente]);
 
-  // Função para iniciar a edição de um cliente
-  const editarCliente = useCallback((cliente) => {
-    setModoEdicao(true);
-    setClienteEditando(cliente);
-    setNovoCliente(cliente);
-  }, []);
-
-  // Função para excluir um cliente
-  const excluirCliente = useCallback((id) => {
-    // REMOVER: Lógica local de exclusão
-    setClientes(prev => prev.filter(c => c.id !== id));
-
-    // SUBSTITUIR: Com chamada à API para excluir cliente
-    // fetch(`/api/clientes/${id}`, { method: 'DELETE' })
-    //   .then(() => setClientes(prev => prev.filter(c => c.id !== id)))
-    //   .catch(error => console.error('Erro ao excluir cliente:', error));
+  const excluirCliente = useCallback(async (id) => {
+    try {
+      await api.delete(`/clientes/${id}`);
+      fetchClientes();
+    } catch (error) {
+      console.error('Erro ao excluir cliente:', error);
+    }
   }, []);
 
   // Função para filtrar clientes

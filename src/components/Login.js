@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from "../components/src/ui/card";
 import { Input } from "../components/src/ui/input";
@@ -7,6 +7,11 @@ import { Button } from "../components/src/ui/button";
 const Login = ({ onLogin }) => {
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    console.log('API URL:', process.env.REACT_APP_API_URL);
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -15,23 +20,41 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // NOTE: Implementar lógica de autenticação real
+    setError('');
+    console.log('Tentando fazer login com:', formData);
     try {
-      // Simulação de uma chamada de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      localStorage.setItem('authToken', 'fake-token');
-      if (rememberMe) {
-        localStorage.setItem('rememberedUser', formData.username);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+        credentials: 'include',
+      });
+      
+      console.log('Resposta completa:', response);
+      console.log('Status:', response.status);
+      console.log('Status Text:', response.statusText);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Usuário ou senha inválidos');
+        }
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+      console.log('Dados da resposta:', data);
+
+      localStorage.setItem('token', data.token);
       onLogin();
     } catch (error) {
-      console.error('Erro de autenticação:', error);
-      alert('Erro ao realizar autenticação. Tente novamente.');
+      console.error('Erro ao tentar fazer login:', error);
+      setError(error.message || 'Erro ao tentar fazer login. Por favor, tente novamente.');
     }
   };
 
   const handleForgotPassword = () => {
-    // NOTE: Implementar lógica para resetar a senha
     alert("Função de recuperação de senha ainda não implementada.");
   };
 
@@ -96,6 +119,7 @@ const Login = ({ onLogin }) => {
                   </button>
                 </div>
               </div>
+              {error && <p className="text-red-500 text-center">{error}</p>}
               <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
                 Entrar
               </Button>

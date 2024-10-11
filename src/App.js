@@ -8,54 +8,22 @@ import Funcionarios from './components/Funcionarios';
 import Historico from './components/Historico';
 
 const App = () => {
-  // Estado para controlar se o usuário está autenticado
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // Estado para controlar qual opção do menu está selecionada
   const [selectedOption, setSelectedOption] = useState('dashboard');
 
-  // TODO: Adicionar verificação de token ao carregar a aplicação
-  // useEffect(() => {
-  //   const token = localStorage.getItem('authToken');
-  //   if (token) {
-  //     // Verificar a validade do token com o back-end
-  //     fetch('/api/verify-token', {
-  //       headers: { 'Authorization': `Bearer ${token}` }
-  //     })
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       if (data.isValid) {
-  //         setIsAuthenticated(true);
-  //       } else {
-  //         localStorage.removeItem('authToken');
-  //       }
-  //     })
-  //     .catch(error => console.error('Erro ao verificar token:', error));
-  //   }
-  // }, []);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
 
-  // Função para lidar com o login
   const handleLogin = () => {
-    // NOTE: Substituir com lógica real de autenticação
     setIsAuthenticated(true);
-    // Exemplo de como seria com um token:
-    // localStorage.setItem('authToken', responseFromServer.token);
   };
 
-  // Função para lidar com o logout
   const handleLogout = () => {
-    // NOTE: Adicionar lógica para invalidar o token no back-end
-    // fetch('/api/logout', {
-    //   method: 'POST',
-    //   headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
-    // })
-    // .then(() => {
-    //   localStorage.removeItem('authToken');
-    //   setIsAuthenticated(false);
-    //   setSelectedOption('dashboard');
-    // })
-    // .catch(error => console.error('Erro ao fazer logout:', error));
-
-    // REMOVER: Esta lógica local quando integrar com o back-end
+    localStorage.removeItem('token');
     setIsAuthenticated(false);
     setSelectedOption('dashboard');
   };
