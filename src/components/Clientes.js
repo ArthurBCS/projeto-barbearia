@@ -1,93 +1,123 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from "../components/src/ui/button";
 import { Input } from "./src/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
-import { PlusCircle, Edit, Trash2, Search } from 'lucide-react'; // Assumindo que você está usando lucide-react para ícones
+import { UserPlus, Phone, Mail, Calendar, Search, Edit, Trash2 } from 'lucide-react';
+
+// Funções de formatação - podem ser mantidas no front-end ou movidas para um arquivo de utilidades
+const formatCPF = (value) => {
+  const cpf = value.replace(/\D/g, '');
+  return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+};
+
+const formatTelefone = (value) => {
+  const telefone = value.replace(/\D/g, '');
+  return telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+};
 
 const Clientes = () => {
+  // Estados para gerenciar os dados dos clientes
   const [clientes, setClientes] = useState([]);
-  const [novoCliente, setNovoCliente] = useState({ nome: '', telefone: '', email: '', dataNascimento: '' });
+  const [novoCliente, setNovoCliente] = useState({ nome: '', cpf: '', telefone: '', email: '', dataNascimento: '' });
   const [modoEdicao, setModoEdicao] = useState(false);
   const [clienteEditando, setClienteEditando] = useState(null);
   const [pesquisa, setPesquisa] = useState('');
 
+  // REMOVER: Este useEffect com dados mockados
   useEffect(() => {
-    // TODO: Substituir por uma chamada API real
-    // fetch('/api/clientes')
-    //   .then(response => response.json())
-    //   .then(data => setClientes(data))
-    //   .catch(error => console.error('Erro ao carregar clientes:', error));
-
-    // REMOVER: Dados mockados (remover quando integrado com o back-end)
-    setClientes([
-      { id: 1, nome: 'João Silva', telefone: '(11) 99999-9999', email: 'joao@email.com', dataNascimento: '1990-05-15' },
-      { id: 2, nome: 'Maria Souza', telefone: '(11) 88888-8888', email: 'maria@email.com', dataNascimento: '1985-10-20' },
-    ]);
+    setTimeout(() => {
+      setClientes([
+        { id: 1, nome: 'João Silva', cpf: '123.456.789-00', telefone: '(11) 99999-9999', email: 'joao@email.com', dataNascimento: '1990-05-15' },
+        { id: 2, nome: 'Maria Souza', cpf: '987.654.321-00', telefone: '(11) 88888-8888', email: 'maria@email.com', dataNascimento: '1985-10-20' },
+      ]);
+    }, 1000);
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNovoCliente(prev => ({ ...prev, [name]: value }));
-  };
+  // SUBSTITUIR: Com uma chamada à API para buscar clientes
+  // useEffect(() => {
+  //   fetch('/api/clientes')
+  //     .then(response => response.json())
+  //     .then(data => setClientes(data))
+  //     .catch(error => console.error('Erro ao carregar clientes:', error));
+  // }, []);
 
+  // Função para lidar com mudanças nos inputs
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    let formattedValue = value;
+    if (name === 'cpf') {
+      formattedValue = formatCPF(value);
+    } else if (name === 'telefone') {
+      formattedValue = formatTelefone(value);
+    }
+    setNovoCliente(prev => ({ ...prev, [name]: formattedValue }));
+  }, []);
+
+  // Função para lidar com o envio do formulário
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
+    // REMOVER: Lógica local de adição/edição
     if (modoEdicao) {
-      // TODO: Atualizar cliente no servidor
-      // fetch(`/api/clientes/${clienteEditando.id}`, {
-      //   method: 'PUT',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(novoCliente)
-      // }).then(response => response.json())
-      //   .then(updatedCliente => {
-      //     setClientes(prev => prev.map(c => c.id === updatedCliente.id ? updatedCliente : c));
-      //     setModoEdicao(false);
-      //   });
-
-      // REMOVER: Lógica local (remover quando integrado com o back-end)
       setClientes(prev => prev.map(c => c.id === clienteEditando.id ? { ...clienteEditando, ...novoCliente } : c));
       setModoEdicao(false);
     } else {
-      // TODO: Adicionar novo cliente no servidor
-      // fetch('/api/clientes', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(novoCliente)
-      // }).then(response => response.json())
-      //   .then(newCliente => setClientes(prev => [...prev, newCliente]));
-
-      // REMOVER: Lógica local (remover quando integrado com o back-end)
       setClientes(prev => [...prev, { ...novoCliente, id: Date.now() }]);
     }
-    setNovoCliente({ nome: '', telefone: '', email: '', dataNascimento: '' });
+    setNovoCliente({ nome: '', cpf: '', telefone: '', email: '', dataNascimento: '' });
+
+    // SUBSTITUIR: Com chamadas à API para adicionar ou atualizar cliente
+    // const url = modoEdicao ? `/api/clientes/${clienteEditando.id}` : '/api/clientes';
+    // const method = modoEdicao ? 'PUT' : 'POST';
+    // fetch(url, {
+    //   method: method,
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(novoCliente)
+    // })
+    // .then(response => response.json())
+    // .then(data => {
+    //   if (modoEdicao) {
+    //     setClientes(prev => prev.map(c => c.id === data.id ? data : c));
+    //   } else {
+    //     setClientes(prev => [...prev, data]);
+    //   }
+    //   setModoEdicao(false);
+    //   setNovoCliente({ nome: '', cpf: '', telefone: '', email: '', dataNascimento: '' });
+    // })
+    // .catch(error => console.error('Erro ao salvar cliente:', error));
   }, [modoEdicao, clienteEditando, novoCliente]);
 
+  // Função para iniciar a edição de um cliente
   const editarCliente = useCallback((cliente) => {
     setModoEdicao(true);
     setClienteEditando(cliente);
     setNovoCliente(cliente);
   }, []);
 
+  // Função para excluir um cliente
   const excluirCliente = useCallback((id) => {
-    // TODO: Excluir cliente no servidor
+    // REMOVER: Lógica local de exclusão
+    setClientes(prev => prev.filter(c => c.id !== id));
+
+    // SUBSTITUIR: Com chamada à API para excluir cliente
     // fetch(`/api/clientes/${id}`, { method: 'DELETE' })
     //   .then(() => setClientes(prev => prev.filter(c => c.id !== id)))
     //   .catch(error => console.error('Erro ao excluir cliente:', error));
-
-    // REMOVER: Lógica local (remover quando integrado com o back-end)
-    setClientes(prev => prev.filter(c => c.id !== id));
   }, []);
 
+  // Função para filtrar clientes
   const clientesFiltrados = clientes.filter(cliente =>
     cliente.nome.toLowerCase().includes(pesquisa.toLowerCase()) ||
-    cliente.email.toLowerCase().includes(pesquisa.toLowerCase())
+    cliente.email.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    cliente.cpf.includes(pesquisa)
   );
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 p-8">
-      <Card className="bg-white shadow-xl">
-        <CardHeader className="bg-gray-100 border-b">
-          <CardTitle className="text-3xl font-bold text-gray-800">Gerenciar Clientes</CardTitle>
+      <Card className="bg-white shadow-xl w-full max-w-7xl mx-auto">
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+          <CardTitle className="text-3xl font-bold flex items-center">
+            <UserPlus className="mr-2" /> Gerenciar Clientes
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="mb-6">
@@ -103,80 +133,111 @@ const Clientes = () => {
             </div>
           </div>
           
-          <form onSubmit={handleSubmit} className="mb-8 bg-gray-50 p-6 rounded-lg shadow-inner">
-            <h3 className="text-xl font-semibold mb-4 text-gray-700">
+          <form onSubmit={handleSubmit} className="mb-8 bg-gray-100 p-6 rounded-lg shadow-inner">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">
               {modoEdicao ? 'Editar Cliente' : 'Adicionar Novo Cliente'}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Input
-                type="text"
-                name="nome"
-                value={novoCliente.nome}
-                onChange={handleInputChange}
-                placeholder="Nome do Cliente"
-                required
-                className="bg-white"
-              />
-              <Input
-                type="tel"
-                name="telefone"
-                value={novoCliente.telefone}
-                onChange={handleInputChange}
-                placeholder="Telefone"
-                required
-                className="bg-white"
-              />
-              <Input
-                type="email"
-                name="email"
-                value={novoCliente.email}
-                onChange={handleInputChange}
-                placeholder="Email"
-                required
-                className="bg-white"
-              />
-              <Input
-                type="date"
-                name="dataNascimento"
-                value={novoCliente.dataNascimento}
-                onChange={handleInputChange}
-                required
-                className="bg-white"
-              />
+              <div className="flex items-center bg-white rounded-md shadow">
+                <UserPlus className="ml-3 text-gray-400" />
+                <Input
+                  type="text"
+                  name="nome"
+                  value={novoCliente.nome}
+                  onChange={handleInputChange}
+                  placeholder="Nome do Cliente"
+                  required
+                  className="border-0 focus:ring-0"
+                />
+              </div>
+              <div className="flex items-center bg-white rounded-md shadow">
+                <span className="ml-3 text-gray-400 font-mono">123</span>
+                <Input
+                  type="text"
+                  name="cpf"
+                  value={novoCliente.cpf}
+                  onChange={handleInputChange}
+                  placeholder="CPF"
+                  required
+                  className="border-0 focus:ring-0"
+                />
+              </div>
+              <div className="flex items-center bg-white rounded-md shadow">
+                <Phone className="ml-3 text-gray-400" />
+                <Input
+                  type="tel"
+                  name="telefone"
+                  value={novoCliente.telefone}
+                  onChange={handleInputChange}
+                  placeholder="Telefone"
+                  required
+                  className="border-0 focus:ring-0"
+                />
+              </div>
+              <div className="flex items-center bg-white rounded-md shadow">
+                <Mail className="ml-3 text-gray-400" />
+                <Input
+                  type="email"
+                  name="email"
+                  value={novoCliente.email}
+                  onChange={handleInputChange}
+                  placeholder="Email"
+                  required
+                  className="border-0 focus:ring-0"
+                />
+              </div>
+              <div className="flex items-center bg-white rounded-md shadow">
+                <Calendar className="ml-3 text-gray-400" />
+                <Input
+                  type="date"
+                  name="dataNascimento"
+                  value={novoCliente.dataNascimento}
+                  onChange={handleInputChange}
+                  required
+                  className="border-0 focus:ring-0"
+                />
+              </div>
             </div>
-            <Button type="submit" className="mt-4 bg-blue-600 hover:bg-blue-700">
-              {modoEdicao ? <Edit className="mr-2" size={16} /> : <PlusCircle className="mr-2" size={16} />}
-              {modoEdicao ? 'Atualizar Cliente' : 'Adicionar Cliente'}
+            <Button type="submit" className="mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+              {modoEdicao ? 'Atualizar Cliente' : 'Incluir Cliente'}
             </Button>
           </form>
 
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nome</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Telefone</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Data de Nascimento</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ações</th>
+                  <th className="px-4 py-2 text-left">Nome</th>
+                  <th className="px-4 py-2 text-left">CPF</th>
+                  <th className="px-4 py-2 text-left">Telefone</th>
+                  <th className="px-4 py-2 text-left">Email</th>
+                  <th className="px-4 py-2 text-left">Data de Nascimento</th>
+                  <th className="px-4 py-2 text-left">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
-                {clientesFiltrados.map((cliente) => (
-                  <tr key={cliente.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">{cliente.nome}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{cliente.telefone}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{cliente.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{new Date(cliente.dataNascimento).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Button onClick={() => editarCliente(cliente)} variant="outline" className="mr-2">
+              <tbody>
+                {clientesFiltrados.map((cliente, index) => (
+                  <motion.tr 
+                    key={cliente.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="border-b border-gray-200 hover:bg-gray-100"
+                  >
+                    <td className="px-4 py-2">{cliente.nome}</td>
+                    <td className="px-4 py-2">{cliente.cpf}</td>
+                    <td className="px-4 py-2">{cliente.telefone}</td>
+                    <td className="px-4 py-2">{cliente.email}</td>
+                    <td className="px-4 py-2">{new Date(cliente.dataNascimento).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">
+                      <Button onClick={() => editarCliente(cliente)} variant="outline" className="mr-2 bg-yellow-500 hover:bg-yellow-600 text-white">
                         <Edit size={16} className="mr-1" /> Editar
                       </Button>
-                      <Button onClick={() => excluirCliente(cliente.id)} variant="destructive">
+                      <Button onClick={() => excluirCliente(cliente.id)} variant="destructive" className="bg-red-500 hover:bg-red-600">
                         <Trash2 size={16} className="mr-1" /> Excluir
                       </Button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
