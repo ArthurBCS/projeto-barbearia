@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Login from './components/Login';
 import Dashboard from './components/Painel';
 import Agendamentos from './components/Agendamentos';
 import Clientes from './components/Clientes';
 import Historico from './components/Historico';
 
-// Componente principal da aplicação
 const App = () => {
-  // Estado para controlar a opção de menu selecionada
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedOption, setSelectedOption] = useState('dashboard');
 
-  // Array de itens do menu
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'agendamentos', label: 'Agendamentos', icon: '📅' },
@@ -18,39 +17,40 @@ const App = () => {
     { id: 'historico', label: 'Histórico', icon: '📜' },
   ];
 
-  // Função para renderizar o conteúdo baseado na opção selecionada
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      // TODO: Verificar token com o back-end
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    // TODO: Chamar API de logout no back-end
+    localStorage.removeItem('authToken');
+    setIsAuthenticated(false);
+  };
+
   const renderContent = () => {
     switch (selectedOption) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'agendamentos':
-        return <Agendamentos />;
-      case 'clientes':
-        return <Clientes />;
-      case 'historico':
-        return <Historico />;
-      default:
-        return <Dashboard />;
+      case 'dashboard': return <Dashboard />;
+      case 'agendamentos': return <Agendamentos />;
+      case 'clientes': return <Clientes />;
+      case 'historico': return <Historico />;
+      default: return <Dashboard />;
     }
   };
 
-  // NOTE: Implementar verificação de autenticação
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     const token = localStorage.getItem('token');
-  //     if (token) {
-  //       // Verificar token com o back-end
-  //       // Se inválido, redirecionar para login
-  //     } else {
-  //       // Redirecionar para login
-  //     }
-  //   };
-  //   checkAuth();
-  // }, []);
+  if (!isAuthenticated) {
+    return <Login onLogin={handleLogin} />;
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
-      {/* Menu Lateral */}
       <div className="w-64 bg-white shadow-md">
         <div className="p-5">
           <h1 className="text-2xl font-semibold text-gray-800">BarberSystem</h1>
@@ -76,12 +76,7 @@ const App = () => {
         </nav>
         <div className="absolute bottom-0 w-64 p-5">
           <button
-            onClick={() => {
-              // NOTE: Implementar lógica de logout
-              // 1. Chamar API de logout no back-end
-              // 2. Limpar token do localStorage
-              // 3. Redirecionar para tela de login
-            }}
+            onClick={handleLogout}
             className="w-full bg-red-500 text-white p-2 rounded hover:bg-red-600 transition duration-300"
           >
             Sair
@@ -89,7 +84,6 @@ const App = () => {
         </div>
       </div>
 
-      {/* Conteúdo Principal */}
       <div className="flex-1 overflow-auto">
         <motion.div
           key={selectedOption}

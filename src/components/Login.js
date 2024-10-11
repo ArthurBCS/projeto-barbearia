@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
-import { Input } from "../components/src/ui/imput";
+import { Card, CardContent } from "../components/src/ui/card";
+import { Input } from "../components/src/ui/input";
 import { Button } from "../components/src/ui/button";
 
 const Login = ({ onLogin }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ email: '', password: '', name: '' });
+  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -16,71 +16,53 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // NOTE: Implementar lógica de autenticação real
-    // Exemplo de integração futura com o back-end:
-    // try {
-    //   const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-    //   const response = await fetch(endpoint, {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(formData)
-    //   });
-    //   if (response.ok) {
-    //     const data = await response.json();
-    //     localStorage.setItem('authToken', data.token);
-    //     onLogin();
-    //   } else {
-    //     const errorData = await response.json();
-    //     alert(errorData.message);
-    //   }
-    // } catch (error) {
-    //   console.error('Erro de autenticação:', error);
-    //   alert('Erro ao realizar autenticação. Tente novamente.');
-    // }
-    
-    // REMOVER: Esta linha deve ser removida quando a autenticação real for implementada
-    onLogin();
+    try {
+      // Simulação de uma chamada de API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      localStorage.setItem('authToken', 'fake-token');
+      if (rememberMe) {
+        localStorage.setItem('rememberedUser', formData.username);
+      }
+      onLogin();
+    } catch (error) {
+      console.error('Erro de autenticação:', error);
+      alert('Erro ao realizar autenticação. Tente novamente.');
+    }
+  };
+
+  const handleForgotPassword = () => {
+    // NOTE: Implementar lógica para resetar a senha
+    alert("Função de recuperação de senha ainda não implementada.");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-cover bg-center" 
+         style={{backgroundImage: "url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80')"}}>
       <motion.div 
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="w-full max-w-md"
       >
-        <Card className="w-96">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center text-gray-800">BarberSystem</CardTitle>
-            <div className="mt-4 w-32 h-32 bg-gray-200 rounded-full mx-auto flex items-center justify-center">
-              <span className="text-gray-500">Logo</span>
+        <Card className="bg-black bg-opacity-80">
+          <CardContent className="p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold mb-2 text-white">BarberSystem</h1>
+              <p className="text-gray-400">Bem-vindo de volta!</p>
             </div>
-          </CardHeader>
-          <CardContent>
-            <motion.div
-              key={isLogin ? 'login' : 'register'}
-              initial={{ opacity: 0, x: isLogin ? -100 : 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {!isLogin && (
-                  <Input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="Nome"
-                    required
-                  />
-                )}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
                 <Input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  name="username"
+                  value={formData.username}
                   onChange={handleInputChange}
-                  placeholder="Email"
+                  placeholder="Usuário"
                   required
+                  className="w-full p-3 bg-white text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+              <div>
                 <Input
                   type="password"
                   name="password"
@@ -88,22 +70,36 @@ const Login = ({ onLogin }) => {
                   onChange={handleInputChange}
                   placeholder="Senha"
                   required
+                  className="w-full p-3 bg-white text-black border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
                 />
-                <Button type="submit" className="w-full">
-                  {isLogin ? 'Entrar' : 'Inscrever-se'}
-                </Button>
-              </form>
-            </motion.div>
-
-            <div className="mt-4 text-center">
-              <Button
-                onClick={() => setIsLogin(!isLogin)}
-                variant="link"
-                className="text-blue-500 hover:underline"
-              >
-                {isLogin ? "Não tem uma conta? Inscreva-se" : "Já tem uma conta? Entre"}
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    id="remember_me"
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={() => setRememberMe(!rememberMe)}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-300">
+                    Lembrar
+                  </label>
+                </div>
+                <div className="text-sm">
+                  <button 
+                    type="button"
+                    onClick={handleForgotPassword}
+                    className="font-medium text-blue-400 hover:text-blue-300"
+                  >
+                    Esqueceu a senha?
+                  </button>
+                </div>
+              </div>
+              <Button type="submit" className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-md transition duration-300">
+                Entrar
               </Button>
-            </div>
+            </form>
           </CardContent>
         </Card>
       </motion.div>

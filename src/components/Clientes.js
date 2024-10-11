@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "../components/src/ui/button";
-import { Input } from "../components/src/ui/imput";
+import { Input } from "./src/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
+import { PlusCircle, Edit, Trash2, Search } from 'lucide-react'; // Assumindo que você está usando lucide-react para ícones
 
 const Clientes = () => {
   const [clientes, setClientes] = useState([]);
   const [novoCliente, setNovoCliente] = useState({ nome: '', telefone: '', email: '', dataNascimento: '' });
   const [modoEdicao, setModoEdicao] = useState(false);
   const [clienteEditando, setClienteEditando] = useState(null);
+  const [pesquisa, setPesquisa] = useState('');
 
   useEffect(() => {
     // TODO: Substituir por uma chamada API real
@@ -76,79 +78,112 @@ const Clientes = () => {
     setClientes(prev => prev.filter(c => c.id !== id));
   }, []);
 
+  const clientesFiltrados = clientes.filter(cliente =>
+    cliente.nome.toLowerCase().includes(pesquisa.toLowerCase()) ||
+    cliente.email.toLowerCase().includes(pesquisa.toLowerCase())
+  );
+
   return (
-    <Card className="p-6">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold mb-4">Gerenciar Clientes</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="mb-6 bg-white p-4 rounded-lg shadow">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              type="text"
-              name="nome"
-              value={novoCliente.nome}
-              onChange={handleInputChange}
-              placeholder="Nome do Cliente"
-              required
-            />
-            <Input
-              type="tel"
-              name="telefone"
-              value={novoCliente.telefone}
-              onChange={handleInputChange}
-              placeholder="Telefone"
-              required
-            />
-            <Input
-              type="email"
-              name="email"
-              value={novoCliente.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              required
-            />
-            <Input
-              type="date"
-              name="dataNascimento"
-              value={novoCliente.dataNascimento}
-              onChange={handleInputChange}
-              required
-            />
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 p-8">
+      <Card className="bg-white shadow-xl">
+        <CardHeader className="bg-gray-100 border-b">
+          <CardTitle className="text-3xl font-bold text-gray-800">Gerenciar Clientes</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Pesquisar clientes..."
+                value={pesquisa}
+                onChange={(e) => setPesquisa(e.target.value)}
+                className="pl-10 w-full"
+              />
+            </div>
           </div>
-          <Button type="submit" className="mt-4">
-            {modoEdicao ? 'Atualizar Cliente' : 'Adicionar Cliente'}
-          </Button>
-        </form>
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Nascimento</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {clientes.map((cliente) => (
-                <tr key={cliente.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{cliente.nome}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{cliente.telefone}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{cliente.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{new Date(cliente.dataNascimento).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Button onClick={() => editarCliente(cliente)} variant="outline" className="mr-2">Editar</Button>
-                    <Button onClick={() => excluirCliente(cliente.id)} variant="destructive">Excluir</Button>
-                  </td>
+          
+          <form onSubmit={handleSubmit} className="mb-8 bg-gray-50 p-6 rounded-lg shadow-inner">
+            <h3 className="text-xl font-semibold mb-4 text-gray-700">
+              {modoEdicao ? 'Editar Cliente' : 'Adicionar Novo Cliente'}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                type="text"
+                name="nome"
+                value={novoCliente.nome}
+                onChange={handleInputChange}
+                placeholder="Nome do Cliente"
+                required
+                className="bg-white"
+              />
+              <Input
+                type="tel"
+                name="telefone"
+                value={novoCliente.telefone}
+                onChange={handleInputChange}
+                placeholder="Telefone"
+                required
+                className="bg-white"
+              />
+              <Input
+                type="email"
+                name="email"
+                value={novoCliente.email}
+                onChange={handleInputChange}
+                placeholder="Email"
+                required
+                className="bg-white"
+              />
+              <Input
+                type="date"
+                name="dataNascimento"
+                value={novoCliente.dataNascimento}
+                onChange={handleInputChange}
+                required
+                className="bg-white"
+              />
+            </div>
+            <Button type="submit" className="mt-4 bg-blue-600 hover:bg-blue-700">
+              {modoEdicao ? <Edit className="mr-2" size={16} /> : <PlusCircle className="mr-2" size={16} />}
+              {modoEdicao ? 'Atualizar Cliente' : 'Adicionar Cliente'}
+            </Button>
+          </form>
+
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-gray-200">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Nome</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Telefone</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Data de Nascimento</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </CardContent>
-    </Card>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {clientesFiltrados.map((cliente) => (
+                  <tr key={cliente.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">{cliente.nome}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{cliente.telefone}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{cliente.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{new Date(cliente.dataNascimento).toLocaleDateString()}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <Button onClick={() => editarCliente(cliente)} variant="outline" className="mr-2">
+                        <Edit size={16} className="mr-1" /> Editar
+                      </Button>
+                      <Button onClick={() => excluirCliente(cliente.id)} variant="destructive">
+                        <Trash2 size={16} className="mr-1" /> Excluir
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

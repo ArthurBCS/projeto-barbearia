@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
 import { Button } from "../components/src/ui/button";
 import { AlertCircle, Edit2, MoreVertical, Check, Clock, X, Calendar } from 'lucide-react';
-import { Input } from "../components/src/ui/imput";
+import { Input } from "./src/ui/input";
 
 // NOTE: Remover esta constante e buscar dados do servidor
 const tiposDeCorte = [

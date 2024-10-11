@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "../components/src/ui/button";
-import { Input } from "../components/src/ui/imput";
+import { Input } from "./src/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/src/ui/card";
 
 const Funcionarios = () => {
